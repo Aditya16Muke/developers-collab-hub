@@ -1,0 +1,41 @@
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { AuthProvider } from "./context/AuthContext";
+import ProtectedRoute from "./components/ProtectedRoute";
+import Navbar from './components/Navbar';
+import Home from './pages/Home';
+import Login from './pages/Login';
+import Register from './pages/Register';
+import Dashboard from './pages/Dashboard';
+import Projects from './pages/Projects';
+import ProjectDetail from './pages/ProjectDetail';
+import CreateProject from './pages/CreateProject';
+import Profile from './pages/Profile';
+import ChatRoom from './pages/ChatRoom';
+
+function App() {
+  return (
+    <AuthProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<><Navbar /><Home /></>} />
+          <Route path="/login" element={<><Navbar /><Login /></>} />
+          <Route path="/register" element={<><Navbar /><Register /></>} />
+          <Route path="/projects" element={<><Navbar /><Projects /></>} />
+          <Route path="/projects/:id" element={<><Navbar /><ProjectDetail /></>} />
+          <Route path="/profile/:id" element={<><Navbar /><Profile /></>} />
+          <Route path="/dashboard" element={
+            <ProtectedRoute><Navbar /><Dashboard /></ProtectedRoute>
+          }/>
+          <Route path="/create-project" element={
+            <ProtectedRoute><Navbar /><CreateProject /></ProtectedRoute>
+          }/>
+          <Route path="/chat/:projectId" element={
+            <ProtectedRoute><ChatRoom /></ProtectedRoute>
+          }/>
+        </Routes>
+      </BrowserRouter>
+    </AuthProvider>
+  );
+}
+
+export default App;
