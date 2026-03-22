@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Developer Collaboration Hub — Project Summary</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f8fafc;color:#1e293b;padding:24px}
+  .wrap{max-width:860px;margin:0 auto}
+  .hero{background:linear-gradient(135deg,#4f46e5,#7c3aed);border-radius:16px;padding:28px;margin-bottom:24px;color:#fff}
+  .hero h1{font-size:24px;font-weight:600;margin-bottom:6px}
+  .hero p{font-size:14px;opacity:.85;line-height:1.6}
+  .links{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap}
+  .link-pill{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);color:#fff;padding:5px 14px;border-radius:20px;font-size:12px;text-decoration:none}
+  .link-pill:hover{background:rgba(255,255,255,.25)}
+  .tabs{display:flex;gap:6px;margin-bottom:20px;flex-wrap:wrap}
+  .tab{padding:8px 18px;border-radius:8px;border:1px solid #e2e8f0;background:#fff;color:#64748b;font-size:13px;cursor:pointer;transition:.15s}
+  .tab.active{background:#4f46e5;color:#fff;border-color:#4f46e5}
+  .tab:hover:not(.active){background:#f1f5f9}
+  .section{display:none}
+  .section.active{display:block}
+  .card{background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px;margin-bottom:14px}
+  .card h3{font-size:15px;font-weight:600;color:#1e293b;margin-bottom:12px}
+  .row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:14px}
+  .stat{background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:16px;text-align:center}
+  .stat .num{font-size:30px;font-weight:700;color:#4f46e5}
+  .stat .lbl{font-size:12px;color:#64748b;margin-top:4px}
+  .badge{display:inline-block;padding:3px 10px;border-radius:12px;font-size:11px;font-weight:500;margin:2px;background:#eef2ff;color:#4338ca}
+  .step{display:flex;gap:12px;margin-bottom:14px;align-items:flex-start}
+  .step-num{width:28px;height:28px;background:#4f46e5;color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;flex-shrink:0}
+  .step-title{font-size:13px;font-weight:600;color:#1e293b;margin-bottom:3px}
+  .step-desc{font-size:12px;color:#64748b;line-height:1.5}
+  .api-row{display:flex;gap:8px;align-items:center;padding:8px 0;border-bottom:1px solid #f1f5f9}
+  .api-row:last-child{border-bottom:none}
+  .method{font-size:11px;font-weight:600;padding:3px 8px;border-radius:4px;min-width:52px;text-align:center}
+  .get{background:#dbeafe;color:#1e40af}
+  .post{background:#d1fae5;color:#065f46}
+  .put{background:#fef3c7;color:#92400e}
+  .del{background:#fee2e2;color:#991b1b}
+  .api-path{font-size:12px;color:#1e293b;font-family:monospace}
+  .api-desc{font-size:11px;color:#64748b;margin-left:auto}
+  .stack-row{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid #f1f5f9}
+  .stack-row:last-child{border-bottom:none}
+  .stack-name{font-size:13px;font-weight:600;color:#1e293b}
+  .stack-role{font-size:12px;color:#64748b}
+  .check{color:#16a34a;font-size:15px}
+  .tip{background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:14px;margin-bottom:12px}
+  .tip-title{font-size:12px;font-weight:600;color:#1e40af;margin-bottom:4px}
+  .tip-desc{font-size:12px;color:#1e40af;line-height:1.6;opacity:.85}
+  footer{text-align:center;margin-top:32px;font-size:12px;color:#94a3b8;padding-bottom:24px}
+  @media(max-width:600px){.row3{grid-template-columns:1fr 1fr}.tabs{gap:4px}.tab{padding:6px 12px;font-size:12px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div class="hero">
+  <h1>Developer Collaboration Hub</h1>
+  <p>A complete full-stack web application where developers post project ideas, find teammates, and communicate in real time. Built from scratch and deployed live.</p>
+  <div class="links">
+    <a class="link-pill" href="https://devcollabhub.vercel.app" target="_blank">Live App</a>
+    <a class="link-pill" href="https://developers-collab-hub.onrender.com/health" target="_blank">Backend API</a>
+    <a class="link-pill" href="https://github.com/Aditya16Muke/developers-collab-hub" target="_blank">GitHub Repo</a>
+  </div>
+</div>
+
+<div class="tabs">
+  <button class="tab active" onclick="show('overview',this)">Overview</button>
+  <button class="tab" onclick="show('stack',this)">Tech Stack</button>
+  <button class="tab" onclick="show('features',this)">Features</button>
+  <button class="tab" onclick="show('api',this)">API Endpoints</button>
+  <button class="tab" onclick="show('flow',this)">How it works</button>
+  <button class="tab" onclick="show('maintain',this)">Maintenance</button>
+</div>
+
+<!-- OVERVIEW -->
+<div id="overview" class="section active">
+  <div class="row3">
+    <div class="stat"><div class="num">4</div><div class="lbl">Database collections</div></div>
+    <div class="stat"><div class="num">15+</div><div class="lbl">API endpoints</div></div>
+    <div class="stat"><div class="num">9</div><div class="lbl">Pages built</div></div>
+  </div>
+  <div class="row3">
+    <div class="stat"><div class="num">JWT</div><div class="lbl">Authentication</div></div>
+    <div class="stat"><div class="num">WS</div><div class="lbl">Real-time chat</div></div>
+    <div class="stat"><div class="num">Live</div><div class="lbl">Deployed & public</div></div>
+  </div>
+  <div class="card">
+    <h3>What this website does</h3>
+    <div class="step"><div class="step-num">1</div><div><div class="step-title">Developers create an account</div><div class="step-desc">Register with name, email and password. Password is hashed with bcrypt before saving. A JWT token is issued on login.</div></div></div>
+    <div class="step"><div class="step-num">2</div><div><div class="step-title">Build a developer profile</div><div class="step-desc">Add skills, bio, and GitHub link. Profile is visible to all users so project owners can evaluate applicants.</div></div></div>
+    <div class="step"><div class="step-num">3</div><div><div class="step-title">Post or browse project ideas</div><div class="step-desc">Any logged-in user can post a project with title, description, tech stack, and team size. All projects are searchable and filterable.</div></div></div>
+    <div class="step"><div class="step-num">4</div><div><div class="step-title">Request to join projects</div><div class="step-desc">Developers send a join request with a message. The project owner sees all requests and can accept or reject each one.</div></div></div>
+    <div class="step"><div class="step-num">5</div><div><div class="step-title">Collaborate with real-time chat</div><div class="step-desc">Accepted team members get access to the project chat room. Messages are sent instantly via Socket.io and saved to MongoDB.</div></div></div>
+  </div>
+</div>
+
+<!-- STACK -->
+<div id="stack" class="section">
+  <div class="card">
+    <h3>Frontend — deployed on Vercel</h3>
+    <div class="stack-row"><div><div class="stack-name">React.js</div><div class="stack-role">UI framework — all pages and components</div></div><span class="check">✓</span></div>
+    <div class="stack-row"><div><div class="stack-name">Tailwind CSS</div><div class="stack-role">Styling — utility classes, responsive design</div></div><span class="check">✓</span></div>
+    <div class="stack-row"><div><div class="stack-name">React Router</div><div class="stack-role">Client-side routing between pages</div></div><span class="check">✓</span></div>
+    <div class="stack-row"><div><div class="stack-name">Axios</div><div class="stack-role">HTTP requests to the backend API</div></div><span class="check">✓</span></div>
+    <div class="stack-row"><div><div class="stack-name">Socket.io client</div><div class="stack-role">Real-time WebSocket connection for chat</div></div><span class="check">✓</span></div>
+    <div class="stack-row"><div><div class="stack-name">Vite</div><div class="stack-role">Build tool — fast development and bundling</div></div><span class="check">✓</span></div>
+  </div>
+  <div class="card">
+    <h3>Backend — deployed on Render</h3>
+    <div class="stack-row"><div><div class="stack-name">Node.js</div><div class="stack-role">JavaScript runtime for the server</div></div><span class="check">✓</span></div>
+    <div class="stack-row"><div><div class="stack-name">Express.js</div><div class="stack-role">Web framework — routes, middleware, API</div></div><span class="check">✓</span></div>
+    <div class="stack-row"><div><div class="stack-name">Socket.io server</div><div class="stack-role">WebSocket server for real-time chat rooms</div></div><span class="check">✓</span></div>
+    <div class="stack-row"><div><div class="stack-name">JWT + bcrypt</div><div class="stack-role">Authentication and password hashing</div></div><span class="check">✓</span></div>
+    <div class="stack-row"><div><div class="stack-name">Helmet + CORS + Rate limiter</div><div class="stack-role">Security middleware</div></div><span class="check">✓</span></div>
+  </div>
+  <div class="card">
+    <h3>Database — MongoDB Atlas</h3>
+    <div class="stack-row"><div><div class="stack-name">MongoDB</div><div class="stack-role">NoSQL database — stores all app data</div></div><span class="check">✓</span></div>
+    <div class="stack-row"><div><div class="stack-name">Mongoose ODM</div><div class="stack-role">Schemas, models, validation</div></div><span class="check">✓</span></div>
+    <div class="stack-row"><div><div class="stack-name">4 Collections</div><div class="stack-role">Users, Projects, JoinRequests, Messages</div></div><span class="check">✓</span></div>
+  </div>
+</div>
+
+<!-- FEATURES -->
+<div id="features" class="section">
+  <div class="card">
+    <h3>All pages built</h3>
+    <div style="margin-top:4px">
+      <span class="badge">Home</span><span class="badge">Login</span><span class="badge">Register</span>
+      <span class="badge">Dashboard</span><span class="badge">Projects</span><span class="badge">Project Detail</span>
+      <span class="badge">Create Project</span><span class="badge">Profile</span><span class="badge">Chat Room</span>
+    </div>
+  </div>
+  <div class="card">
+    <h3>Authentication system</h3>
+    <div class="step"><div class="step-num">1</div><div><div class="step-title">Register</div><div class="step-desc">User submits name, email, password → bcrypt hashes password → saved to MongoDB → JWT token returned</div></div></div>
+    <div class="step"><div class="step-num">2</div><div><div class="step-title">Login</div><div class="step-desc">Email + password submitted → bcrypt compares hash → JWT token issued → stored in localStorage</div></div></div>
+    <div class="step"><div class="step-num">3</div><div><div class="step-title">Protected routes</div><div class="step-desc">Every request sends JWT in Authorization header → server verifies token → grants or denies access</div></div></div>
+  </div>
+  <div class="card">
+    <h3>Real-time chat system</h3>
+    <div class="step"><div class="step-num">1</div><div><div class="step-title">Connect</div><div class="step-desc">Socket.io connects to server using JWT token for authentication when user opens chat</div></div></div>
+    <div class="step"><div class="step-num">2</div><div><div class="step-title">Join room</div><div class="step-desc">User joins a socket room named after the project ID. Only project members can access</div></div></div>
+    <div class="step"><div class="step-num">3</div><div><div class="step-title">Send message</div><div class="step-desc">Message emitted to server → saved to MongoDB → broadcast to all users in the room instantly</div></div></div>
+  </div>
+</div>
+
+<!-- API -->
+<div id="api" class="section">
+  <div class="card">
+    <h3>Auth endpoints</h3>
+    <div class="api-row"><span class="method post">POST</span><span class="api-path">/api/auth/register</span><span class="api-desc">Create account</span></div>
+    <div class="api-row"><span class="method post">POST</span><span class="api-path">/api/auth/login</span><span class="api-desc">Login, get JWT</span></div>
+    <div class="api-row"><span class="method get">GET</span><span class="api-path">/api/auth/me</span><span class="api-desc">Get current user</span></div>
+  </div>
+  <div class="card">
+    <h3>User endpoints</h3>
+    <div class="api-row"><span class="method get">GET</span><span class="api-path">/api/users/:id</span><span class="api-desc">Public profile</span></div>
+    <div class="api-row"><span class="method put">PUT</span><span class="api-path">/api/users/profile</span><span class="api-desc">Update profile</span></div>
+  </div>
+  <div class="card">
+    <h3>Project endpoints</h3>
+    <div class="api-row"><span class="method get">GET</span><span class="api-path">/api/projects</span><span class="api-desc">List all projects</span></div>
+    <div class="api-row"><span class="method get">GET</span><span class="api-path">/api/projects/mine</span><span class="api-desc">My projects</span></div>
+    <div class="api-row"><span class="method get">GET</span><span class="api-path">/api/projects/:id</span><span class="api-desc">Single project</span></div>
+    <div class="api-row"><span class="method post">POST</span><span class="api-path">/api/projects</span><span class="api-desc">Create project</span></div>
+    <div class="api-row"><span class="method put">PUT</span><span class="api-path">/api/projects/:id</span><span class="api-desc">Update project</span></div>
+    <div class="api-row"><span class="method del">DEL</span><span class="api-path">/api/projects/:id</span><span class="api-desc">Delete project</span></div>
+  </div>
+  <div class="card">
+    <h3>Join request endpoints</h3>
+    <div class="api-row"><span class="method post">POST</span><span class="api-path">/api/join-requests</span><span class="api-desc">Send request</span></div>
+    <div class="api-row"><span class="method get">GET</span><span class="api-path">/api/join-requests/:projectId</span><span class="api-desc">View requests</span></div>
+    <div class="api-row"><span class="method put">PUT</span><span class="api-path">/api/join-requests/:id</span><span class="api-desc">Accept or reject</span></div>
+  </div>
+  <div class="card">
+    <h3>Message endpoints</h3>
+    <div class="api-row"><span class="method get">GET</span><span class="api-path">/api/messages/:projectId</span><span class="api-desc">Load chat history</span></div>
+  </div>
+</div>
+
+<!-- FLOW -->
+<div id="flow" class="section">
+  <div class="card">
+    <h3>How a user registers and logs in</h3>
+    <div class="step"><div class="step-num">1</div><div><div class="step-title">User fills register form on frontend</div><div class="step-desc">React collects name, email, password and calls POST /api/auth/register via Axios</div></div></div>
+    <div class="step"><div class="step-num">2</div><div><div class="step-title">Backend receives the request</div><div class="step-desc">Express validates fields, checks if email exists, hashes password with bcrypt cost factor 12</div></div></div>
+    <div class="step"><div class="step-num">3</div><div><div class="step-title">User saved to MongoDB</div><div class="step-desc">Mongoose creates a new User document with hashed password stored</div></div></div>
+    <div class="step"><div class="step-num">4</div><div><div class="step-title">JWT token issued and returned</div><div class="step-desc">Backend generates a 30-day JWT token and sends it back with user data</div></div></div>
+    <div class="step"><div class="step-num">5</div><div><div class="step-title">Frontend stores token</div><div class="step-desc">AuthContext saves user and token to localStorage. All future API requests attach this token automatically</div></div></div>
+  </div>
+  <div class="card">
+    <h3>How a project gets created and joined</h3>
+    <div class="step"><div class="step-num">1</div><div><div class="step-title">Owner fills Create Project form</div><div class="step-desc">Title, description, tech stack, max team size submitted to POST /api/projects with JWT token</div></div></div>
+    <div class="step"><div class="step-num">2</div><div><div class="step-title">Project saved with owner reference</div><div class="step-desc">MongoDB stores project with owner field pointing to the user's ID</div></div></div>
+    <div class="step"><div class="step-num">3</div><div><div class="step-title">Another developer sends join request</div><div class="step-desc">POST /api/join-requests with projectId and message. System checks they are not already a member</div></div></div>
+    <div class="step"><div class="step-num">4</div><div><div class="step-title">Owner accepts or rejects</div><div class="step-desc">PUT /api/join-requests/:id with status accepted or rejected. On accept, user added to project collaborators</div></div></div>
+    <div class="step"><div class="step-num">5</div><div><div class="step-title">Team can now chat</div><div class="step-desc">Both owner and collaborators can access the real-time chat room for that project</div></div></div>
+  </div>
+</div>
+
+<!-- MAINTAIN -->
+<div id="maintain" class="section">
+  <div class="tip">
+    <div class="tip-title">Render free tier sleeps after 15 minutes of inactivity</div>
+    <div class="tip-desc">First request after sleep takes 30-60 seconds. Use UptimeRobot (free) to ping your health endpoint every 14 minutes to keep it awake.</div>
+  </div>
+  <div class="tip">
+    <div class="tip-title">MongoDB Atlas free tier has 512MB storage limit</div>
+    <div class="tip-desc">More than enough for a portfolio project. Monitor usage in Atlas dashboard under Database → Browse Collections.</div>
+  </div>
+  <div class="card">
+    <h3>How to update the live app</h3>
+    <div class="step"><div class="step-num">1</div><div><div class="step-title">Make changes locally</div><div class="step-desc">Edit files in VS Code. Test on localhost:5173 and localhost:5000 first.</div></div></div>
+    <div class="step"><div class="step-num">2</div><div><div class="step-title">Push to GitHub</div><div class="step-desc">git add . → git commit -m "fix: your change" → git push origin main</div></div></div>
+    <div class="step"><div class="step-num">3</div><div><div class="step-title">Auto deployment triggers</div><div class="step-desc">Vercel redeploys frontend automatically. Render redeploys backend automatically. Both take 2-3 minutes.</div></div></div>
+  </div>
+  <div class="card">
+    <h3>Your live links</h3>
+    <div class="stack-row"><div><div class="stack-name">Live App</div><div class="stack-role">https://devcollabhub.vercel.app</div></div></div>
+    <div class="stack-row"><div><div class="stack-name">Backend API</div><div class="stack-role">https://developers-collab-hub.onrender.com</div></div></div>
+    <div class="stack-row"><div><div class="stack-name">GitHub Repo</div><div class="stack-role">https://github.com/Aditya16Muke/developers-collab-hub</div></div></div>
+  </div>
+</div>
+
+<footer>Developer Collaboration Hub — Built by Aditya16Muke — Full Stack: React, Node.js, MongoDB, Socket.io</footer>
+</div>
+
+<script>
+function show(id, btn) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  btn.classList.add('active');
+}
+</script>
+</body>
+</html>
