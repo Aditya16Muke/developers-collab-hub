@@ -7,111 +7,94 @@ const CreateProject = () => {
   const [loading, setLoading]     = useState(false);
   const [error, setError]         = useState('');
   const [techInput, setTechInput] = useState('');
-  const [form, setForm] = useState({
-    title: '', description: '', techStack: [],
-    maxTeamSize: 5, githubLink: '', tags: [],
-  });
-
-  const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
+  const [form, setForm] = useState({ title: '', description: '', techStack: [], maxTeamSize: 5, githubLink: '' });
 
   const addTech = (e) => {
     if (e.key === 'Enter' && techInput.trim()) {
       e.preventDefault();
-      if (!form.techStack.includes(techInput.trim())) {
-        setForm({ ...form, techStack: [...form.techStack, techInput.trim()] });
-      }
+      if (!form.techStack.includes(techInput.trim())) setForm({ ...form, techStack: [...form.techStack, techInput.trim()] });
       setTechInput('');
     }
   };
-
-  const removeTech = (tech) => setForm({ ...form, techStack: form.techStack.filter(t => t !== tech) });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!form.title || !form.description) return setError('Title and description are required');
     setLoading(true);
     try {
-      const res = await createProject(form);
-      navigate(`/projects/${res.data._id}`);
+      const r = await createProject(form);
+      navigate(`/projects/${r.data._id}`);
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to create project');
-    } finally {
-      setLoading(false);
-    }
+    } finally { setLoading(false); }
   };
 
   return (
-    <div className="max-w-2xl mx-auto px-4 py-10">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">Create a Project</h1>
-        <p className="text-gray-500 mt-1">Share your idea and find collaborators</p>
-      </div>
+    <div style={{ minHeight: '100vh', position: 'relative', overflow: 'hidden' }}>
+      <div className="orb" style={{ width: '400px', height: '400px', background: '#f5c342', top: '-100px', right: '-100px' }} />
 
-      {error && (
-        <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg text-sm mb-6">{error}</div>
-      )}
+      <div className="section-wrap" style={{ paddingTop: '48px', paddingBottom: '80px', position: 'relative', zIndex: 1 }}>
+        <div style={{ maxWidth: '640px' }}>
 
-      <form onSubmit={handleSubmit} className="bg-white rounded-2xl border border-gray-200 p-6 space-y-5">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Project Title *</label>
-          <input name="title" value={form.title} onChange={handleChange}
-            placeholder="e.g. Open Source Task Manager"
-            className="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Description *</label>
-          <textarea name="description" value={form.description} onChange={handleChange}
-            placeholder="Describe your project and what kind of help you need..."
-            rows={5}
-            className="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition resize-none"
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Tech Stack</label>
-          <div className="flex flex-wrap gap-2 mb-2">
-            {form.techStack.map((tech, i) => (
-              <span key={i} className="bg-indigo-50 text-indigo-600 text-xs font-medium px-3 py-1 rounded-full flex items-center gap-1">
-                {tech}
-                <button type="button" onClick={() => removeTech(tech)} className="text-indigo-400 hover:text-indigo-600">×</button>
-              </span>
-            ))}
+          <div style={{ marginBottom: '36px' }}>
+            <p style={{ fontSize: '13px', color: '#7878a0', fontWeight: '500', marginBottom: '6px', letterSpacing: '1px', textTransform: 'uppercase' }}>New</p>
+            <h1 style={{ fontFamily: 'Syne', fontWeight: '800', fontSize: 'clamp(26px,4vw,36px)', letterSpacing: '-1px' }}>
+              Create a <span className="grad-text">Project</span>
+            </h1>
           </div>
-          <input value={techInput} onChange={e => setTechInput(e.target.value)} onKeyDown={addTech}
-            placeholder="Type a technology and press Enter"
-            className="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
-          />
-        </div>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Max Team Size</label>
-          <input type="number" name="maxTeamSize" value={form.maxTeamSize} onChange={handleChange}
-            min={2} max={20}
-            className="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
-          />
-        </div>
+          {error && (
+            <div style={{ background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.2)', borderRadius: '10px', padding: '12px 16px', marginBottom: '24px', fontSize: '13px', color: '#f87171' }}>
+              {error}
+            </div>
+          )}
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">GitHub Link (optional)</label>
-          <input name="githubLink" value={form.githubLink} onChange={handleChange}
-            placeholder="https://github.com/username/repo"
-            className="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
-          />
-        </div>
+          <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+            <div>
+              <label className="label-dark">Project Title *</label>
+              <input className="input-dark" value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} placeholder="e.g. Open Source Task Manager" />
+            </div>
 
-        <div className="flex gap-3 pt-2">
-          <button type="button" onClick={() => navigate(-1)}
-            className="flex-1 border border-gray-200 text-gray-700 py-2.5 rounded-xl font-medium text-sm hover:bg-gray-50 transition">
-            Cancel
-          </button>
-          <button type="submit" disabled={loading}
-            className="flex-1 bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-400 text-white py-2.5 rounded-xl font-medium text-sm transition">
-            {loading ? 'Creating...' : 'Create Project'}
-          </button>
+            <div>
+              <label className="label-dark">Description *</label>
+              <textarea className="input-dark" value={form.description} onChange={e => setForm({ ...form, description: e.target.value })}
+                placeholder="Describe your project and what kind of help you need..." rows={5}
+                style={{ resize: 'none' }} />
+            </div>
+
+            <div>
+              <label className="label-dark">Tech Stack</label>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginBottom: '8px' }}>
+                {form.techStack.map((t, i) => (
+                  <span key={i} className="tech-pill" style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    {t}
+                    <span onClick={() => setForm({ ...form, techStack: form.techStack.filter(x => x !== t) })} style={{ opacity: 0.6, fontSize: '13px' }}>×</span>
+                  </span>
+                ))}
+              </div>
+              <input className="input-dark" value={techInput} onChange={e => setTechInput(e.target.value)} onKeyDown={addTech} placeholder="Type tech and press Enter (e.g. React)" />
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+              <div>
+                <label className="label-dark">Max Team Size</label>
+                <input className="input-dark" type="number" min={2} max={20} value={form.maxTeamSize} onChange={e => setForm({ ...form, maxTeamSize: e.target.value })} />
+              </div>
+              <div>
+                <label className="label-dark">GitHub Link</label>
+                <input className="input-dark" value={form.githubLink} onChange={e => setForm({ ...form, githubLink: e.target.value })} placeholder="https://github.com/..." />
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', gap: '12px', paddingTop: '8px' }}>
+              <button type="button" onClick={() => navigate(-1)} className="btn-ghost" style={{ flex: 1, padding: '13px' }}>Cancel</button>
+              <button type="submit" disabled={loading} className="btn-gold" style={{ flex: 2, padding: '13px', opacity: loading ? 0.7 : 1 }}>
+                {loading ? 'Creating...' : 'Create Project →'}
+              </button>
+            </div>
+          </form>
         </div>
-      </form>
+      </div>
     </div>
   );
 };

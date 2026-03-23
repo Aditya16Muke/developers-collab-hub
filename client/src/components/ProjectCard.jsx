@@ -1,48 +1,44 @@
 import { Link } from 'react-router-dom';
 
-const statusColors = {
-  open:          'bg-green-100 text-green-700',
-  'in-progress': 'bg-yellow-100 text-yellow-700',
-  completed:     'bg-gray-100 text-gray-600',
-};
-
 const ProjectCard = ({ project }) => {
+  const sClass = { open: 's-open', 'in-progress': 's-progress', completed: 's-done' };
+  const sLabel = { open: 'OPEN', 'in-progress': 'ACTIVE', completed: 'DONE' };
+
   return (
-    <div className="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-md hover:border-indigo-200 transition-all duration-200">
-      <div className="flex justify-between items-start mb-3">
-        <h3 className="font-semibold text-gray-900 text-lg leading-tight">{project.title}</h3>
-        <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${statusColors[project.status]}`}>
-          {project.status}
+    <div className="card" style={{ padding: '22px', display: 'flex', flexDirection: 'column', gap: '14px' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '10px' }}>
+        <h3 style={{ fontSize: '16px', fontWeight: '700', color: 'var(--white)', lineHeight: '1.3', flex: 1 }}>{project.title}</h3>
+        <span className={sClass[project.status]} style={{ flexShrink: 0, fontFamily: 'JetBrains Mono', letterSpacing: '0.5px' }}>
+          {sLabel[project.status]}
         </span>
       </div>
 
-      <p className="text-gray-500 text-sm mb-4 line-clamp-2">{project.description}</p>
+      <p style={{ fontSize: '13px', color: 'var(--muted)', lineHeight: '1.65', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+        {project.description}
+      </p>
 
       {project.techStack?.length > 0 && (
-        <div className="flex flex-wrap gap-2 mb-4">
-          {project.techStack.slice(0, 4).map((tech, i) => (
-            <span key={i} className="bg-indigo-50 text-indigo-600 text-xs font-medium px-2.5 py-1 rounded-md">
-              {tech}
-            </span>
-          ))}
-          {project.techStack.length > 4 && (
-            <span className="text-gray-400 text-xs py-1">+{project.techStack.length - 4} more</span>
-          )}
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px' }}>
+          {project.techStack.slice(0, 4).map((t, i) => <span key={i} className="tag-cyan">{t}</span>)}
+          {project.techStack.length > 4 && <span style={{ fontSize: '11px', color: 'var(--muted)', padding: '3px 6px' }}>+{project.techStack.length - 4}</span>}
         </div>
       )}
 
-      <div className="flex justify-between items-center pt-3 border-t border-gray-100">
-        <div className="flex items-center gap-2">
-          <div className="w-6 h-6 bg-indigo-100 rounded-full flex items-center justify-center">
-            <span className="text-indigo-600 text-xs font-semibold">
-              {project.owner?.name?.charAt(0).toUpperCase()}
-            </span>
-          </div>
-          <span className="text-gray-500 text-xs">{project.owner?.name}</span>
+      <div className="hr" style={{ margin: '0' }} />
+
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <div style={{
+            width: '22px', height: '22px', background: 'var(--cyan)',
+            borderRadius: '50%', display: 'flex', alignItems: 'center',
+            justifyContent: 'center', fontSize: '10px', fontWeight: '700', color: '#000',
+          }}>{project.owner?.name?.charAt(0).toUpperCase()}</div>
+          <span className="mono" style={{ fontSize: '11px', color: 'var(--muted)' }}>{project.owner?.name}</span>
         </div>
-        <Link to={`/projects/${project._id}`} className="text-indigo-600 hover:text-indigo-700 text-sm font-medium transition">
-          View Details →
-        </Link>
+        <Link to={`/projects/${project._id}`} style={{
+          color: 'var(--cyan)', textDecoration: 'none', fontSize: '13px',
+          fontWeight: '600', display: 'flex', alignItems: 'center', gap: '4px',
+        }}>View →</Link>
       </div>
     </div>
   );

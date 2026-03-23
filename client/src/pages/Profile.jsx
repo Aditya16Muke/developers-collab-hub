@@ -4,8 +4,8 @@ import { useAuth } from '../context/AuthContext';
 import api from '../api/axios';
 
 const Profile = () => {
-  const { id }              = useParams();
-  const { user, login }     = useAuth();
+  const { id }          = useParams();
+  const { user, login } = useAuth();
   const [profile, setProfile]       = useState(null);
   const [loading, setLoading]       = useState(true);
   const [editing, setEditing]       = useState(false);
@@ -15,128 +15,109 @@ const Profile = () => {
   const isOwn = user?._id === id;
 
   useEffect(() => {
-    const load = async () => {
-      try {
-        const res = await api.get(`/users/${id}`);
-        setProfile(res.data);
-        setForm({ name: res.data.name || '', bio: res.data.bio || '', skills: res.data.skills || [], github: res.data.github || '', avatar: res.data.avatar || '' });
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    load();
+    api.get(`/users/${id}`).then(r => {
+      setProfile(r.data);
+      setForm({ name: r.data.name || '', bio: r.data.bio || '', skills: r.data.skills || [], github: r.data.github || '', avatar: r.data.avatar || '' });
+    }).catch(console.error).finally(() => setLoading(false));
   }, [id]);
 
   const addSkill = (e) => {
     if (e.key === 'Enter' && skillInput.trim()) {
       e.preventDefault();
-      if (!form.skills.includes(skillInput.trim())) {
-        setForm({ ...form, skills: [...form.skills, skillInput.trim()] });
-      }
+      if (!form.skills.includes(skillInput.trim())) setForm({ ...form, skills: [...form.skills, skillInput.trim()] });
       setSkillInput('');
     }
   };
 
-  const removeSkill = (skill) => setForm({ ...form, skills: form.skills.filter(s => s !== skill) });
-
   const handleSave = async () => {
     try {
-      const res = await api.put('/users/profile', form);
-      setProfile(res.data);
-      login({ ...user, ...res.data });
-      setEditing(false);
-    } catch (err) {
-      console.error(err);
-    }
+      const r = await api.put('/users/profile', form);
+      setProfile(r.data); login({ ...user, ...r.data }); setEditing(false);
+    } catch (e) { console.error(e); }
   };
 
   if (loading) return (
-    <div className="flex justify-center py-20">
-      <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-indigo-600"></div>
+    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '60vh' }}>
+      <div style={{ width: '36px', height: '36px', border: '2px solid rgba(245,195,66,0.2)', borderTopColor: '#f5c342', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+      <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
     </div>
   );
 
-  if (!profile) return <div className="text-center py-20"><h2 className="text-xl font-semibold">User not found</h2></div>;
+  if (!profile) return <div style={{ textAlign: 'center', padding: '60px' }}>User not found</div>;
 
   return (
-    <div className="max-w-2xl mx-auto px-4 py-10">
-      <div className="bg-white rounded-2xl border border-gray-200 p-8">
-        <div className="flex items-center gap-5 mb-8">
-          <div className="w-20 h-20 bg-indigo-100 rounded-full flex items-center justify-center">
-            <span className="text-indigo-600 text-3xl font-bold">{profile.name?.charAt(0).toUpperCase()}</span>
-          </div>
-          <div className="flex-1">
-            {editing ? (
-              <input value={form.name} onChange={e => setForm({ ...form, name: e.target.value })}
-                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-lg font-bold focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              />
-            ) : (
-              <h1 className="text-2xl font-bold text-gray-900">{profile.name}</h1>
+    <div style={{ minHeight: '100vh', position: 'relative', overflow: 'hidden' }}>
+      <div className="orb" style={{ width: '400px', height: '400px', background: '#7c6ff7', top: '-100px', left: '-100px' }} />
+
+      <div className="section-wrap" style={{ paddingTop: '48px', paddingBottom: '80px', position: 'relative', zIndex: 1 }}>
+        <div style={{ maxWidth: '600px' }}>
+
+          {/* Profile card */}
+          <div className="glass-card" style={{ padding: '32px', marginBottom: '20px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '20px', marginBottom: '28px' }}>
+              <div style={{
+                width: '72px', height: '72px', borderRadius: '50%', flexShrink: 0,
+                background: 'linear-gradient(135deg,#f5c342,#e8784a)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontFamily: 'Syne', fontWeight: '800', fontSize: '26px', color: '#07070f',
+              }}>{profile.name?.charAt(0).toUpperCase()}</div>
+              <div style={{ flex: 1 }}>
+                {editing
+                  ? <input className="input-dark" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} style={{ fontFamily: 'Syne', fontWeight: '700', fontSize: '18px', marginBottom: '4px' }} />
+                  : <h1 style={{ fontFamily: 'Syne', fontWeight: '800', fontSize: '22px', letterSpacing: '-0.5px', marginBottom: '4px' }}>{profile.name}</h1>
+                }
+                <p style={{ fontSize: '13px', color: '#7878a0' }}>{profile.email}</p>
+              </div>
+              {isOwn && (
+                <button onClick={() => editing ? handleSave() : setEditing(true)} className={editing ? 'btn-gold' : 'btn-ghost'} style={{ padding: '8px 18px', fontSize: '13px' }}>
+                  {editing ? 'Save' : 'Edit'}
+                </button>
+              )}
+            </div>
+
+            <div className="divider" />
+
+            <div style={{ marginTop: '20px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+              <div>
+                <label className="label-dark">Bio</label>
+                {editing
+                  ? <textarea className="input-dark" value={form.bio} onChange={e => setForm({ ...form, bio: e.target.value })} placeholder="Tell others about yourself..." rows={3} style={{ resize: 'none' }} />
+                  : <p style={{ fontSize: '14px', color: profile.bio ? '#eeeef8' : '#44446a', lineHeight: '1.65' }}>{profile.bio || 'No bio added yet'}</p>
+                }
+              </div>
+
+              <div>
+                <label className="label-dark">Skills</label>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginBottom: editing ? '8px' : '0' }}>
+                  {(editing ? form.skills : profile.skills)?.map((s, i) => (
+                    <span key={i} className="tech-pill" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      {s}
+                      {editing && <span onClick={() => setForm({ ...form, skills: form.skills.filter(x => x !== s) })} style={{ cursor: 'pointer', opacity: 0.6 }}>×</span>}
+                    </span>
+                  ))}
+                  {!editing && !profile.skills?.length && <span style={{ fontSize: '13px', color: '#44446a' }}>No skills added</span>}
+                </div>
+                {editing && <input className="input-dark" value={skillInput} onChange={e => setSkillInput(e.target.value)} onKeyDown={addSkill} placeholder="Type a skill and press Enter" />}
+              </div>
+
+              <div>
+                <label className="label-dark">GitHub</label>
+                {editing
+                  ? <input className="input-dark" value={form.github} onChange={e => setForm({ ...form, github: e.target.value })} placeholder="https://github.com/username" />
+                  : profile.github
+                    ? <a href={profile.github} target="_blank" rel="noreferrer" style={{ fontSize: '14px', color: '#f5c342', textDecoration: 'none' }}>{profile.github}</a>
+                    : <p style={{ fontSize: '13px', color: '#44446a' }}>No GitHub link</p>
+                }
+              </div>
+            </div>
+
+            {editing && (
+              <button onClick={() => setEditing(false)} className="btn-ghost" style={{ width: '100%', marginTop: '20px', padding: '11px' }}>Cancel</button>
             )}
-            <p className="text-gray-500 text-sm mt-1">{profile.email}</p>
           </div>
-          {isOwn && (
-            <button onClick={() => editing ? handleSave() : setEditing(true)}
-              className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition">
-              {editing ? 'Save' : 'Edit Profile'}
-            </button>
-          )}
         </div>
-
-        <div className="mb-6">
-          <h2 className="text-sm font-semibold text-gray-700 mb-2">Bio</h2>
-          {editing ? (
-            <textarea value={form.bio} onChange={e => setForm({ ...form, bio: e.target.value })}
-              placeholder="Tell others about yourself..." rows={3}
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none"
-            />
-          ) : (
-            <p className="text-gray-600 text-sm">{profile.bio || 'No bio yet'}</p>
-          )}
-        </div>
-
-        <div className="mb-6">
-          <h2 className="text-sm font-semibold text-gray-700 mb-2">Skills</h2>
-          <div className="flex flex-wrap gap-2 mb-2">
-            {(editing ? form.skills : profile.skills)?.map((skill, i) => (
-              <span key={i} className="bg-indigo-50 text-indigo-600 text-xs font-medium px-3 py-1 rounded-full flex items-center gap-1">
-                {skill}
-                {editing && <button onClick={() => removeSkill(skill)} className="text-indigo-400 hover:text-indigo-600">×</button>}
-              </span>
-            ))}
-            {!editing && !profile.skills?.length && <p className="text-gray-400 text-sm">No skills added yet</p>}
-          </div>
-          {editing && (
-            <input value={skillInput} onChange={e => setSkillInput(e.target.value)} onKeyDown={addSkill}
-              placeholder="Type a skill and press Enter"
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            />
-          )}
-        </div>
-
-        <div className="mb-4">
-          <h2 className="text-sm font-semibold text-gray-700 mb-2">GitHub</h2>
-          {editing ? (
-            <input value={form.github} onChange={e => setForm({ ...form, github: e.target.value })}
-              placeholder="https://github.com/yourusername"
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            />
-          ) : profile.github ? (
-            <a href={profile.github} target="_blank" rel="noreferrer" className="text-indigo-600 hover:underline text-sm">{profile.github}</a>
-          ) : (
-            <p className="text-gray-400 text-sm">No GitHub link</p>
-          )}
-        </div>
-
-        {editing && (
-          <button onClick={() => setEditing(false)}
-            className="w-full border border-gray-200 text-gray-600 py-2 rounded-lg text-sm mt-2 hover:bg-gray-50 transition">
-            Cancel
-          </button>
-        )}
       </div>
+      <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
     </div>
   );
 };

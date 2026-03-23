@@ -11,72 +11,59 @@ const Projects = () => {
 
   const load = async () => {
     setLoading(true);
-    try {
-      const res = await fetchProjects({ search, status, tech });
-      setProjects(res.data);
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
+    try { const r = await fetchProjects({ search, status, tech }); setProjects(r.data); }
+    catch (e) { console.error(e); }
+    finally { setLoading(false); }
   };
 
   useEffect(() => { load(); }, []);
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-10">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Browse Projects</h1>
-        <p className="text-gray-500">Find projects to collaborate on</p>
-      </div>
+    <div style={{ minHeight: '100vh', position: 'relative', overflow: 'hidden' }}>
+      <div className="orb" style={{ width: '500px', height: '500px', background: '#7c6ff7', top: '-100px', left: '-200px' }} />
 
-      <form onSubmit={(e) => { e.preventDefault(); load(); }} className="bg-white rounded-xl border border-gray-200 p-4 mb-8">
-        <div className="flex flex-col md:flex-row gap-3">
-          <input
-            type="text" placeholder="Search projects..." value={search}
-            onChange={e => setSearch(e.target.value)}
-            className="flex-1 border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
-          />
-          <select
-            value={status} onChange={e => setStatus(e.target.value)}
-            className="border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
-          >
+      <div className="section-wrap" style={{ paddingTop: '48px', paddingBottom: '80px', position: 'relative', zIndex: 1 }}>
+
+        <div style={{ marginBottom: '36px' }}>
+          <p style={{ fontSize: '13px', color: '#7878a0', fontWeight: '500', marginBottom: '6px', letterSpacing: '1px', textTransform: 'uppercase' }}>Discover</p>
+          <h1 style={{ fontFamily: 'Syne', fontWeight: '800', fontSize: 'clamp(26px,4vw,38px)', letterSpacing: '-1px' }}>
+            Browse <span className="grad-text">Projects</span>
+          </h1>
+        </div>
+
+        {/* Filters */}
+        <form onSubmit={e => { e.preventDefault(); load(); }} style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', marginBottom: '36px' }}>
+          <input className="input-dark" placeholder="Search projects..." value={search} onChange={e => setSearch(e.target.value)} style={{ flex: 2, minWidth: '200px' }} />
+          <input className="input-dark" placeholder="Filter by tech..." value={tech} onChange={e => setTech(e.target.value)} style={{ flex: 1, minWidth: '150px' }} />
+          <select className="input-dark" value={status} onChange={e => setStatus(e.target.value)} style={{ flex: 1, minWidth: '130px' }}>
             <option value="">All Status</option>
             <option value="open">Open</option>
             <option value="in-progress">In Progress</option>
             <option value="completed">Completed</option>
           </select>
-          <input
-            type="text" placeholder="Filter by tech..." value={tech}
-            onChange={e => setTech(e.target.value)}
-            className="border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
-          />
-          <button type="submit" className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2.5 rounded-lg text-sm font-medium transition">
-            Search
-          </button>
-        </div>
-      </form>
+          <button type="submit" className="btn-gold" style={{ padding: '11px 24px', whiteSpace: 'nowrap' }}>Search</button>
+        </form>
 
-      {loading ? (
-        <div className="flex justify-center py-20">
-          <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-indigo-600"></div>
-        </div>
-      ) : projects.length === 0 ? (
-        <div className="text-center py-20">
-          <div className="text-5xl mb-4">🔍</div>
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">No projects found</h3>
-          <p className="text-gray-500 text-sm">Try different search terms</p>
-        </div>
-      ) : (
-        <>
-          <p className="text-gray-500 text-sm mb-4">{projects.length} projects found</p>
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {projects.map(project => (
-              <ProjectCard key={project._id} project={project} />
-            ))}
+        {loading ? (
+          <div style={{ display: 'flex', justifyContent: 'center', padding: '80px 0' }}>
+            <div style={{ width: '36px', height: '36px', border: '2px solid rgba(245,195,66,0.2)', borderTopColor: '#f5c342', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
           </div>
-        </>
-      )}
+        ) : projects.length === 0 ? (
+          <div className="glass-card" style={{ padding: '60px', textAlign: 'center' }}>
+            <div style={{ fontSize: '40px', marginBottom: '16px' }}>🔍</div>
+            <h3 style={{ fontFamily: 'Syne', fontWeight: '700', fontSize: '18px', marginBottom: '8px' }}>No projects found</h3>
+            <p style={{ color: '#7878a0', fontSize: '14px' }}>Try different search terms</p>
+          </div>
+        ) : (
+          <>
+            <p style={{ fontSize: '13px', color: '#7878a0', marginBottom: '20px' }}>{projects.length} projects found</p>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(300px,1fr))', gap: '16px' }}>
+              {projects.map(p => <ProjectCard key={p._id} project={p} />)}
+            </div>
+          </>
+        )}
+      </div>
+      <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
     </div>
   );
 };

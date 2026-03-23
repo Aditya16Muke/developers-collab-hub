@@ -10,79 +10,56 @@ const Register = () => {
   const { login }             = useAuth();
   const navigate              = useNavigate();
 
-  const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-    setError('');
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (form.password.length < 6) return setError('Password must be at least 6 characters');
     setLoading(true);
-    try {
-      const res = await registerUser(form);
-      login(res.data);
-      navigate('/dashboard');
-    } catch (err) {
-      setError(err.response?.data?.message || 'Registration failed. Please try again.');
-    } finally {
-      setLoading(false);
-    }
+    try { const r = await registerUser(form); login(r.data); navigate('/dashboard'); }
+    catch (err) { setError(err.response?.data?.message || 'Registration failed'); }
+    finally { setLoading(false); }
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8 w-full max-w-md">
-        <div className="text-center mb-8">
-          <div className="w-12 h-12 bg-indigo-600 rounded-xl flex items-center justify-center mx-auto mb-4">
-            <span className="text-white font-bold text-lg">DC</span>
-          </div>
-          <h1 className="text-2xl font-bold text-gray-900">Create your account</h1>
-          <p className="text-gray-500 text-sm mt-1">Start collaborating today</p>
-        </div>
+    <div className="grid-bg" style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '40px 24px', position: 'relative', overflow: 'hidden' }}>
+      <div className="orb" style={{ width: '500px', height: '500px', background: '#f700ff', top: '-200px', right: '-200px' }} />
+      <div className="orb" style={{ width: '400px', height: '400px', background: '#00f5d4', bottom: '-100px', left: '-100px' }} />
+
+      <div style={{ width: '100%', maxWidth: '440px', position: 'relative', zIndex: 1 }}>
+        <Link to="/" style={{ textDecoration: 'none', display: 'inline-block', marginBottom: '40px' }}>
+          <div style={{ fontFamily: 'Bebas Neue', fontSize: '18px', letterSpacing: '4px', color: 'var(--cyan)' }}>← DEVCOLLAB</div>
+        </Link>
+
+        <div className="mono" style={{ fontSize: '11px', color: '#f700ff', letterSpacing: '2px', marginBottom: '12px' }}>// CREATE ACCOUNT</div>
+        <h1 style={{ fontSize: '30px', fontWeight: '700', letterSpacing: '-0.5px', marginBottom: '6px' }}>Join the network</h1>
+        <p style={{ color: 'var(--muted)', fontSize: '14px', marginBottom: '36px' }}>Start collaborating in 30 seconds. Always free.</p>
 
         {error && (
-          <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg text-sm mb-6">
+          <div style={{ background: 'rgba(255,60,60,0.08)', border: '1px solid rgba(255,60,60,0.2)', borderRadius: '8px', padding: '12px 16px', marginBottom: '20px', fontSize: '13px', color: '#ff6b6b' }}>
             {error}
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Full name</label>
-            <input
-              type="text" name="name" value={form.name}
-              onChange={handleChange} placeholder="Alex Developer" required
-              className="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
-            />
+            <label className="lbl">Full Name</label>
+            <input className="input" type="text" placeholder="Alex Developer" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} required />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Email address</label>
-            <input
-              type="email" name="email" value={form.email}
-              onChange={handleChange} placeholder="you@example.com" required
-              className="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
-            />
+            <label className="lbl">Email</label>
+            <input className="input" type="email" placeholder="you@example.com" value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} required />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
-            <input
-              type="password" name="password" value={form.password}
-              onChange={handleChange} placeholder="Min 6 characters" required
-              className="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
-            />
+            <label className="lbl">Password</label>
+            <input className="input" type="password" placeholder="Min 6 characters" value={form.password} onChange={e => setForm({ ...form, password: e.target.value })} required />
           </div>
-          <button
-            type="submit" disabled={loading}
-            className="w-full bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-400 text-white py-2.5 rounded-lg font-medium text-sm transition"
-          >
-            {loading ? 'Creating account...' : 'Create account'}
+          <button type="submit" disabled={loading} className="btn btn-primary" style={{ width: '100%', marginTop: '8px', padding: '14px', fontSize: '15px', opacity: loading ? .7 : 1 }}>
+            {loading ? 'Creating...' : 'Create Account →'}
           </button>
         </form>
 
-        <p className="text-center text-sm text-gray-500 mt-6">
+        <p style={{ textAlign: 'center', fontSize: '14px', color: 'var(--muted)', marginTop: '24px' }}>
           Already have an account?{' '}
-          <Link to="/login" className="text-indigo-600 hover:text-indigo-700 font-medium">Sign in</Link>
+          <Link to="/login" style={{ color: 'var(--cyan)', textDecoration: 'none', fontWeight: '600' }}>Sign in</Link>
         </p>
       </div>
     </div>

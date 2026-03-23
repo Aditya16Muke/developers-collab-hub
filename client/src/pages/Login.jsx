@@ -10,71 +10,71 @@ const Login = () => {
   const { login }             = useAuth();
   const navigate              = useNavigate();
 
-  const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-    setError('');
-  };
-
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    try {
-      const res = await loginUser(form);
-      login(res.data);
-      navigate('/dashboard');
-    } catch (err) {
-      setError(err.response?.data?.message || 'Login failed. Please try again.');
-    } finally {
-      setLoading(false);
-    }
+    e.preventDefault(); setLoading(true);
+    try { const r = await loginUser(form); login(r.data); navigate('/dashboard'); }
+    catch (err) { setError(err.response?.data?.message || 'Login failed'); }
+    finally { setLoading(false); }
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8 w-full max-w-md">
-        <div className="text-center mb-8">
-          <div className="w-12 h-12 bg-indigo-600 rounded-xl flex items-center justify-center mx-auto mb-4">
-            <span className="text-white font-bold text-lg">DC</span>
-          </div>
-          <h1 className="text-2xl font-bold text-gray-900">Welcome back</h1>
-          <p className="text-gray-500 text-sm mt-1">Sign in to your account</p>
+    <div className="grid-bg" style={{ minHeight: '100vh', display: 'flex', position: 'relative', overflow: 'hidden' }}>
+      <div className="orb" style={{ width: '500px', height: '500px', background: '#00f5d4', top: '-200px', left: '-200px' }} />
+      <div className="orb" style={{ width: '400px', height: '400px', background: '#f700ff', bottom: '0', right: '-100px' }} />
+
+      {/* Left panel */}
+      <div style={{ flex: 1, borderRight: '1px solid rgba(0,245,212,0.08)', display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '60px', position: 'relative', zIndex: 1 }}>
+        <Link to="/" style={{ textDecoration: 'none', marginBottom: '56px', display: 'inline-block' }}>
+          <div style={{ fontFamily: 'Bebas Neue', fontSize: '22px', letterSpacing: '4px', color: 'var(--cyan)', textShadow: '0 0 20px rgba(0,245,212,0.4)' }}>DEVCOLLAB</div>
+        </Link>
+        <div className="display" style={{ fontSize: 'clamp(40px,5vw,64px)', lineHeight: '0.92', letterSpacing: '2px', marginBottom: '24px' }}>
+          BUILD<br />GREAT<br /><span style={{ color: 'var(--cyan)' }}>THINGS.</span>
         </div>
-
-        {error && (
-          <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg text-sm mb-6">
-            {error}
-          </div>
-        )}
-
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Email address</label>
-            <input
-              type="email" name="email" value={form.email}
-              onChange={handleChange} placeholder="you@example.com" required
-              className="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
-            <input
-              type="password" name="password" value={form.password}
-              onChange={handleChange} placeholder="••••••••" required
-              className="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
-            />
-          </div>
-          <button
-            type="submit" disabled={loading}
-            className="w-full bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-400 text-white py-2.5 rounded-lg font-medium text-sm transition"
-          >
-            {loading ? 'Signing in...' : 'Sign in'}
-          </button>
-        </form>
-
-        <p className="text-center text-sm text-gray-500 mt-6">
-          Do not have an account?{' '}
-          <Link to="/register" className="text-indigo-600 hover:text-indigo-700 font-medium">Create one</Link>
+        <p style={{ color: 'var(--muted)', fontSize: '15px', lineHeight: '1.75', maxWidth: '340px', marginBottom: '40px' }}>
+          Join thousands of developers collaborating on real projects that ship.
         </p>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+          {['Post your project idea in minutes', 'Find skilled collaborators worldwide', 'Chat in real-time with your team'].map((t, i) => (
+            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <div style={{ width: '6px', height: '6px', background: 'var(--cyan)', borderRadius: '50%', boxShadow: '0 0 8px var(--cyan)', flexShrink: 0 }} />
+              <span style={{ fontSize: '14px', color: 'var(--muted)' }}>{t}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Right panel */}
+      <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '40px 24px', position: 'relative', zIndex: 1 }}>
+        <div style={{ width: '100%', maxWidth: '380px' }}>
+          <div className="mono" style={{ fontSize: '11px', color: 'var(--cyan)', letterSpacing: '2px', marginBottom: '12px' }}>// SIGN IN</div>
+          <h1 style={{ fontSize: '28px', fontWeight: '700', letterSpacing: '-0.5px', marginBottom: '6px' }}>Welcome back</h1>
+          <p style={{ color: 'var(--muted)', fontSize: '14px', marginBottom: '36px' }}>Continue building where you left off</p>
+
+          {error && (
+            <div style={{ background: 'rgba(255,60,60,0.08)', border: '1px solid rgba(255,60,60,0.2)', borderRadius: '8px', padding: '12px 16px', marginBottom: '20px', fontSize: '13px', color: '#ff6b6b' }}>
+              {error}
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+            <div>
+              <label className="lbl">Email</label>
+              <input className="input" type="email" placeholder="you@example.com" value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} required />
+            </div>
+            <div>
+              <label className="lbl">Password</label>
+              <input className="input" type="password" placeholder="••••••••" value={form.password} onChange={e => setForm({ ...form, password: e.target.value })} required />
+            </div>
+            <button type="submit" disabled={loading} className="btn btn-primary" style={{ width: '100%', marginTop: '8px', padding: '14px', fontSize: '15px', opacity: loading ? .7 : 1 }}>
+              {loading ? 'Signing in...' : 'Sign In →'}
+            </button>
+          </form>
+
+          <p style={{ textAlign: 'center', fontSize: '14px', color: 'var(--muted)', marginTop: '24px' }}>
+            No account?{' '}
+            <Link to="/register" style={{ color: 'var(--cyan)', textDecoration: 'none', fontWeight: '600' }}>Create one free</Link>
+          </p>
+        </div>
       </div>
     </div>
   );

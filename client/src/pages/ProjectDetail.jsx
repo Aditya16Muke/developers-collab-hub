@@ -14,271 +14,198 @@ const ProjectDetail = () => {
   const [message, setMessage]   = useState('');
   const [feedback, setFeedback] = useState('');
 
-  const isOwner = user && project?.owner?._id === user._id;
-  const isCollaborator = project?.collaborators?.some(c => c._id === user?._id);
-  const isMember = isOwner || isCollaborator;
+  const isOwner       = user && project?.owner?._id === user._id;
+  const isCollaborator= project?.collaborators?.some(c => c._id === user?._id);
+  const isMember      = isOwner || isCollaborator;
 
   useEffect(() => {
     const load = async () => {
       try {
-        const res = await fetchProject(id);
-        setProject(res.data);
-        if (user && res.data.owner._id === user._id) {
-          const reqRes = await getProjectRequests(id);
-          setRequests(reqRes.data);
+        const r = await fetchProject(id);
+        setProject(r.data);
+        if (user && r.data.owner._id === user._id) {
+          const rr = await getProjectRequests(id);
+          setRequests(rr.data);
         }
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
+      } catch (e) { console.error(e); }
+      finally { setLoading(false); }
     };
     load();
   }, [id, user]);
 
-  const handleJoinRequest = async () => {
+  const handleJoin = async () => {
     try {
       await sendJoinRequest({ projectId: id, message });
-      setFeedback('Join request sent successfully!');
+      setFeedback('Request sent successfully!');
       setMessage('');
-    } catch (err) {
-      setFeedback(err.response?.data?.message || 'Failed to send request');
-    }
+    } catch (e) { setFeedback(e.response?.data?.message || 'Failed to send request'); }
   };
 
-  const handleRespond = async (requestId, status) => {
+  const handleRespond = async (reqId, status) => {
     try {
-      await respondToRequest(requestId, status);
-      setRequests(prev =>
-        prev.map(r => r._id === requestId ? { ...r, status } : r)
-      );
-      if (status === 'accepted') {
-        const res = await fetchProject(id);
-        setProject(res.data);
-      }
-    } catch (err) {
-      console.error(err);
-    }
+      await respondToRequest(reqId, status);
+      setRequests(prev => prev.map(r => r._id === reqId ? { ...r, status } : r));
+      if (status === 'accepted') { const r = await fetchProject(id); setProject(r.data); }
+    } catch (e) { console.error(e); }
   };
 
   const handleDelete = async () => {
-    if (!window.confirm('Are you sure you want to delete this project?')) return;
-    try {
-      await deleteProject(id);
-      navigate('/dashboard');
-    } catch (err) {
-      console.error(err);
-    }
+    if (!window.confirm('Delete this project?')) return;
+    await deleteProject(id);
+    navigate('/dashboard');
   };
 
   if (loading) return (
-    <div className="flex justify-center py-20">
-      <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-indigo-600"></div>
+    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '60vh' }}>
+      <div style={{ width: '36px', height: '36px', border: '2px solid rgba(245,195,66,0.2)', borderTopColor: '#f5c342', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+      <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
     </div>
   );
 
-  if (!project) return (
-    <div className="text-center py-20">
-      <h2 className="text-xl font-semibold text-gray-900">Project not found</h2>
-    </div>
-  );
+  if (!project) return <div style={{ textAlign: 'center', padding: '60px', color: '#7878a0' }}>Project not found</div>;
+
+  const statusClass = { open: 'status-open', 'in-progress': 'status-progress', completed: 'status-done' };
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-10">
+    <div style={{ minHeight: '100vh', position: 'relative', overflow: 'hidden' }}>
+      <div className="orb" style={{ width: '400px', height: '400px', background: '#7c6ff7', top: '-100px', right: '-100px' }} />
 
-      {/* Header */}
-      <div className="bg-white rounded-2xl border border-gray-200 p-6 mb-6">
-        <div className="flex justify-between items-start mb-4">
-          <div>
-            <span className={`text-xs font-medium px-2.5 py-1 rounded-full mb-3 inline-block ${
-              project.status === 'open' ? 'bg-green-100 text-green-700' :
-              project.status === 'in-progress' ? 'bg-yellow-100 text-yellow-700' :
-              'bg-gray-100 text-gray-600'
-            }`}>
-              {project.status}
-            </span>
-            <h1 className="text-3xl font-bold text-gray-900">{project.title}</h1>
+      <div className="section-wrap" style={{ paddingTop: '48px', paddingBottom: '80px', position: 'relative', zIndex: 1 }}>
+        <div style={{ maxWidth: '760px' }}>
+
+          {/* Main card */}
+          <div className="glass-card" style={{ padding: '32px', marginBottom: '20px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '16px', marginBottom: '20px', flexWrap: 'wrap' }}>
+              <div>
+                <span className={statusClass[project.status]} style={{ fontSize: '11px', padding: '3px 12px', borderRadius: '100px', marginBottom: '12px', display: 'inline-block' }}>
+                  {project.status}
+                </span>
+                <h1 style={{ fontFamily: 'Syne', fontWeight: '800', fontSize: 'clamp(22px,4vw,32px)', letterSpacing: '-0.8px', lineHeight: '1.15' }}>{project.title}</h1>
+              </div>
+              {isOwner && (
+                <div style={{ display: 'flex', gap: '10px', flexShrink: 0 }}>
+                  <Link to={`/chat/${project._id}`} className="btn-gold" style={{ textDecoration: 'none', fontSize: '13px', padding: '9px 18px' }}>Team Chat</Link>
+                  <button onClick={handleDelete} className="btn-danger">Delete</button>
+                </div>
+              )}
+            </div>
+
+            <p style={{ fontSize: '15px', color: '#b0b0c8', lineHeight: '1.75', marginBottom: '24px' }}>{project.description}</p>
+
+            {project.techStack?.length > 0 && (
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginBottom: '24px' }}>
+                {project.techStack.map((t, i) => <span key={i} className="tech-pill">{t}</span>)}
+              </div>
+            )}
+
+            <div className="divider" />
+
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '24px', marginTop: '20px', fontSize: '14px', color: '#7878a0' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: 'linear-gradient(135deg,#f5c342,#e8784a)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '10px', fontWeight: '800', color: '#07070f' }}>
+                  {project.owner?.name?.charAt(0).toUpperCase()}
+                </div>
+                <span>Owner: <span style={{ color: '#eeeef8', fontWeight: '500' }}>{project.owner?.name}</span></span>
+              </div>
+              <span>Team: <span style={{ color: '#eeeef8', fontWeight: '500' }}>{(project.collaborators?.length || 0) + 1} / {project.maxTeamSize}</span></span>
+              {project.githubLink && (
+                <a href={project.githubLink} target="_blank" rel="noreferrer" style={{ color: '#f5c342', textDecoration: 'none' }}>GitHub →</a>
+              )}
+            </div>
           </div>
-          {isOwner && (
-            <div className="flex gap-2">
-              <Link
-                to={`/chat/${project._id}`}
-                className="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-indigo-700 transition"
-              >
-                Team Chat
-              </Link>
-              <button
-                onClick={handleDelete}
-                className="bg-red-50 text-red-600 px-4 py-2 rounded-lg text-sm font-medium hover:bg-red-100 transition"
-              >
-                Delete
-              </button>
+
+          {/* Collaborators */}
+          {project.collaborators?.length > 0 && (
+            <div className="glass-card" style={{ padding: '24px', marginBottom: '20px' }}>
+              <h2 style={{ fontFamily: 'Syne', fontWeight: '700', fontSize: '16px', marginBottom: '16px' }}>Team Members</h2>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
+                {project.collaborators.map(c => (
+                  <Link key={c._id} to={`/profile/${c._id}`} style={{
+                    display: 'flex', alignItems: 'center', gap: '8px', textDecoration: 'none',
+                    background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)',
+                    borderRadius: '100px', padding: '6px 14px', transition: 'all 0.2s',
+                  }}>
+                    <div style={{ width: '22px', height: '22px', borderRadius: '50%', background: 'linear-gradient(135deg,#7c6ff7,#22d3ee)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '10px', fontWeight: '800', color: '#fff' }}>
+                      {c.name?.charAt(0).toUpperCase()}
+                    </div>
+                    <span style={{ fontSize: '13px', color: '#eeeef8', fontWeight: '500' }}>{c.name}</span>
+                  </Link>
+                ))}
+              </div>
             </div>
           )}
-        </div>
 
-        <p className="text-gray-600 leading-relaxed mb-6">{project.description}</p>
+          {/* Join request */}
+          {user && !isOwner && !isMember && project.status === 'open' && (
+            <div className="glass-card" style={{ padding: '24px', marginBottom: '20px' }}>
+              <h2 style={{ fontFamily: 'Syne', fontWeight: '700', fontSize: '16px', marginBottom: '16px' }}>Request to Join</h2>
+              {feedback ? (
+                <div style={{ background: feedback.includes('success') ? 'rgba(34,197,94,0.08)' : 'rgba(239,68,68,0.08)', border: `1px solid ${feedback.includes('success') ? 'rgba(34,197,94,0.2)' : 'rgba(239,68,68,0.2)'}`, borderRadius: '10px', padding: '12px 16px', fontSize: '14px', color: feedback.includes('success') ? '#4ade80' : '#f87171' }}>
+                  {feedback}
+                </div>
+              ) : (
+                <>
+                  <textarea className="input-dark" value={message} onChange={e => setMessage(e.target.value)} placeholder="Tell the owner why you want to join and what skills you bring..." rows={3} style={{ resize: 'none', marginBottom: '12px' }} />
+                  <button onClick={handleJoin} className="btn-gold">Send Request</button>
+                </>
+              )}
+            </div>
+          )}
 
-        {/* Tech Stack */}
-        {project.techStack?.length > 0 && (
-          <div className="flex flex-wrap gap-2 mb-6">
-            {project.techStack.map((tech, i) => (
-              <span key={i} className="bg-indigo-50 text-indigo-600 text-xs font-medium px-3 py-1 rounded-md">
-                {tech}
-              </span>
-            ))}
-          </div>
-        )}
+          {/* Chat button for members */}
+          {isMember && !isOwner && (
+            <div className="glass-card" style={{ padding: '20px', marginBottom: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', borderColor: 'rgba(245,195,66,0.2)' }}>
+              <div>
+                <h3 style={{ fontFamily: 'Syne', fontWeight: '700', fontSize: '15px', marginBottom: '4px' }}>You are a collaborator</h3>
+                <p style={{ fontSize: '13px', color: '#7878a0' }}>Access the team chat room</p>
+              </div>
+              <Link to={`/chat/${project._id}`} className="btn-gold" style={{ textDecoration: 'none', fontSize: '13px' }}>Open Chat →</Link>
+            </div>
+          )}
 
-        {/* Meta */}
-        <div className="flex flex-wrap gap-6 text-sm text-gray-500 pt-4 border-t border-gray-100">
-          <div className="flex items-center gap-2">
-            <span>👤</span>
-            <span>Owner: <span className="text-gray-900 font-medium">{project.owner?.name}</span></span>
-          </div>
-          <div className="flex items-center gap-2">
-            <span>👥</span>
-            <span>Team: <span className="text-gray-900 font-medium">{project.collaborators?.length + 1} / {project.maxTeamSize}</span></span>
-          </div>
-          {project.githubLink && (
-            <a href={project.githubLink} target="_blank" rel="noreferrer" className="flex items-center gap-2 text-indigo-600 hover:text-indigo-700">
-              <span>🔗</span>
-              <span>GitHub Repository</span>
-            </a>
+          {/* Join requests for owner */}
+          {isOwner && (
+            <div className="glass-card" style={{ padding: '24px' }}>
+              <h2 style={{ fontFamily: 'Syne', fontWeight: '700', fontSize: '16px', marginBottom: '16px' }}>
+                Join Requests <span style={{ color: '#f5c342' }}>({requests.filter(r => r.status === 'pending').length} pending)</span>
+              </h2>
+              {requests.length === 0 ? (
+                <p style={{ fontSize: '14px', color: '#44446a' }}>No requests yet</p>
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                  {requests.map(req => (
+                    <div key={req._id} style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: '12px', padding: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '12px', flexWrap: 'wrap' }}>
+                      <div style={{ flex: 1 }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px', flexWrap: 'wrap' }}>
+                          <div style={{ width: '26px', height: '26px', borderRadius: '50%', background: 'linear-gradient(135deg,#7c6ff7,#22d3ee)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '11px', fontWeight: '800', color: '#fff' }}>
+                            {req.applicant?.name?.charAt(0).toUpperCase()}
+                          </div>
+                          <span style={{ fontWeight: '600', fontSize: '14px', color: '#eeeef8' }}>{req.applicant?.name}</span>
+                          <span className={req.status === 'pending' ? 'status-progress' : req.status === 'accepted' ? 'status-open' : 'status-done'} style={{ fontSize: '10px', padding: '2px 8px', borderRadius: '100px' }}>
+                            {req.status}
+                          </span>
+                        </div>
+                        {req.applicant?.skills?.length > 0 && (
+                          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px', marginBottom: '6px' }}>
+                            {req.applicant.skills.map((s, i) => <span key={i} className="tech-pill" style={{ fontSize: '10px' }}>{s}</span>)}
+                          </div>
+                        )}
+                        {req.message && <p style={{ fontSize: '13px', color: '#7878a0', lineHeight: '1.5' }}>{req.message}</p>}
+                      </div>
+                      {req.status === 'pending' && (
+                        <div style={{ display: 'flex', gap: '8px', flexShrink: 0 }}>
+                          <button onClick={() => handleRespond(req._id, 'accepted')} style={{ background: 'rgba(34,197,94,0.1)', border: '1px solid rgba(34,197,94,0.2)', color: '#4ade80', padding: '7px 14px', borderRadius: '8px', fontSize: '12px', cursor: 'pointer', fontWeight: '500' }}>Accept</button>
+                          <button onClick={() => handleRespond(req._id, 'rejected')} className="btn-danger" style={{ padding: '7px 14px', fontSize: '12px' }}>Reject</button>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
           )}
         </div>
       </div>
-
-      {/* Collaborators */}
-      {project.collaborators?.length > 0 && (
-        <div className="bg-white rounded-2xl border border-gray-200 p-6 mb-6">
-          <h2 className="font-semibold text-gray-900 mb-4">Team Members</h2>
-          <div className="flex flex-wrap gap-3">
-            {project.collaborators.map(collab => (
-              <Link
-                key={collab._id}
-                to={`/profile/${collab._id}`}
-                className="flex items-center gap-2 bg-gray-50 hover:bg-indigo-50 px-3 py-2 rounded-lg transition"
-              >
-                <div className="w-7 h-7 bg-indigo-100 rounded-full flex items-center justify-center">
-                  <span className="text-indigo-600 text-xs font-semibold">
-                    {collab.name?.charAt(0).toUpperCase()}
-                  </span>
-                </div>
-                <span className="text-sm text-gray-700">{collab.name}</span>
-              </Link>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Join Request Section */}
-      {user && !isOwner && !isMember && project.status === 'open' && (
-        <div className="bg-white rounded-2xl border border-gray-200 p-6 mb-6">
-          <h2 className="font-semibold text-gray-900 mb-4">Request to Join</h2>
-          {feedback ? (
-            <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg text-sm">
-              {feedback}
-            </div>
-          ) : (
-            <>
-              <textarea
-                value={message}
-                onChange={e => setMessage(e.target.value)}
-                placeholder="Tell the owner why you want to join and what skills you bring..."
-                rows={3}
-                className="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition resize-none mb-3"
-              />
-              <button
-                onClick={handleJoinRequest}
-                className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2.5 rounded-lg font-medium text-sm transition"
-              >
-                Send Request
-              </button>
-            </>
-          )}
-        </div>
-      )}
-
-      {/* Chat button for members */}
-      {isMember && !isOwner && (
-        <div className="bg-indigo-50 rounded-2xl border border-indigo-100 p-6 mb-6 flex justify-between items-center">
-          <div>
-            <h3 className="font-semibold text-gray-900">You are a collaborator</h3>
-            <p className="text-gray-500 text-sm">Access the team chat room</p>
-          </div>
-          <Link
-            to={`/chat/${project._id}`}
-            className="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-lg text-sm font-medium transition"
-          >
-            Open Chat
-          </Link>
-        </div>
-      )}
-
-      {/* Join Requests for Owner */}
-      {isOwner && (
-        <div className="bg-white rounded-2xl border border-gray-200 p-6">
-          <h2 className="font-semibold text-gray-900 mb-4">
-            Join Requests ({requests.filter(r => r.status === 'pending').length} pending)
-          </h2>
-          {requests.length === 0 ? (
-            <p className="text-gray-500 text-sm">No requests yet</p>
-          ) : (
-            <div className="space-y-4">
-              {requests.map(req => (
-                <div key={req._id} className="flex items-start justify-between p-4 bg-gray-50 rounded-xl">
-                  <div>
-                    <div className="flex items-center gap-2 mb-1">
-                      <div className="w-7 h-7 bg-indigo-100 rounded-full flex items-center justify-center">
-                        <span className="text-indigo-600 text-xs font-semibold">
-                          {req.applicant?.name?.charAt(0).toUpperCase()}
-                        </span>
-                      </div>
-                      <span className="font-medium text-gray-900 text-sm">{req.applicant?.name}</span>
-                      <span className={`text-xs px-2 py-0.5 rounded-full ${
-                        req.status === 'pending'  ? 'bg-yellow-100 text-yellow-700' :
-                        req.status === 'accepted' ? 'bg-green-100 text-green-700' :
-                        'bg-red-100 text-red-600'
-                      }`}>
-                        {req.status}
-                      </span>
-                    </div>
-                    {req.applicant?.skills?.length > 0 && (
-                      <div className="flex flex-wrap gap-1 mb-1">
-                        {req.applicant.skills.map((s, i) => (
-                          <span key={i} className="text-xs bg-white border border-gray-200 px-2 py-0.5 rounded">
-                            {s}
-                          </span>
-                        ))}
-                      </div>
-                    )}
-                    {req.message && (
-                      <p className="text-gray-500 text-xs">{req.message}</p>
-                    )}
-                  </div>
-                  {req.status === 'pending' && (
-                    <div className="flex gap-2 ml-4">
-                      <button
-                        onClick={() => handleRespond(req._id, 'accepted')}
-                        className="bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 rounded-lg text-xs font-medium transition"
-                      >
-                        Accept
-                      </button>
-                      <button
-                        onClick={() => handleRespond(req._id, 'rejected')}
-                        className="bg-red-50 hover:bg-red-100 text-red-600 px-3 py-1.5 rounded-lg text-xs font-medium transition"
-                      >
-                        Reject
-                      </button>
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      )}
     </div>
   );
 };
